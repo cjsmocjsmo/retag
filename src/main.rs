@@ -14,6 +14,7 @@ fn main() -> std::io::Result<()> {
     let media = utils::walk_additional_dir(usb);
     let mut count = 0;
     for m in media{
+        println!("{}", m.clone());
         count += 1;
         let dir_artist = utils::dir_artist(m.clone());
         let filename_artist = utils::filename_artist(m.clone());
