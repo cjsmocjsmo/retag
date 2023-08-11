@@ -12,6 +12,7 @@ fn main() -> std::io::Result<()> {
     let args = Cli::parse();
     let usb = args.usbdrive;
     let media = utils::walk_additional_dir(usb);
+    println!("Found {} files", media.len());
     let mut count = 0;
     for m in media{
         println!("{}", m.clone());
