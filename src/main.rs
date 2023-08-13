@@ -1,6 +1,7 @@
 pub mod utils;
 
 use clap::Parser;
+use std::time::Instant;
 
 #[derive(Parser)]
 struct Cli {
@@ -8,53 +9,40 @@ struct Cli {
 }
 
 fn main() -> std::io::Result<()> {
-    println!("Hello Retagger!");
+    let start = Instant::now();
+    println!("Hello from retag!\n\nScanning files...");
     let args = Cli::parse();
     let usb = args.usbdrive;
     let media = utils::walk_additional_dir(usb);
     println!("Found {} files", media.len());
     let mut count = 0;
-    for m in media{
-        println!("{}", m.clone());
+    for m in media.clone() {
         count += 1;
-        let dir_artist = utils::dir_artist(m.clone());
-        let filename_artist = utils::filename_artist(m.clone());
-        let ta = utils::tag_artist(m.clone());
-        let tag_artist = ta.replace(" ", "_");
-        if dir_artist != filename_artist && filename_artist != tag_artist && dir_artist != tag_artist {
-            println!("Artists don't match");
-            println!("dir_artist: {}", dir_artist);
-            println!("filename_artist: {}", filename_artist);
-            println!("tag_artist: {}", tag_artist);
-            println!("{}", m.clone());
+
+        let ck = utils::Mp3Checks { apath: m.clone() };
+        let artcheck = ck.artist_check();
+        let albcheck = ck.album_check();
+        let songcheck = ck.song_check();
+        if artcheck == true && albcheck == true && songcheck == true {
+            println!("All tags match");
+        } else {
+            println!("artcheck: {}", artcheck);
+            println!("albcheck: {}", albcheck);
+            println!("songcheck: {}", songcheck);
+            panic!("Tags don't match\nHalting program until tags are fixed")
         }
-
-
-        let dir_album = utils::dir_album(m.clone());
-        let filename_album = utils::filename_album(m.clone());
-        let tag_album = utils::tag_album(m.clone());
-        let tag_alb = tag_album.replace(" ", "_");
-        if dir_album != filename_album && filename_album != tag_alb && dir_album != tag_alb {
-            println!("Albums don't match");
-            println!("dir_album: {}", dir_album);
-            println!("filename_album: {}", filename_album);
-            println!("tag_album: {}", tag_alb);
-            println!("{}", m.clone());
-        }
-
-        let filename_song = utils::filename_song(m.clone());
-        let ts = utils::tag_song(m.clone());
-        let tag_songs = ts.replace(" ", "_");
-        if filename_song != tag_songs {
-            println!("Songs don't match");
-            println!("filename_song: {}", filename_song);
-            println!("tag_song: {}", tag_songs);
-            println!("{}", m.clone());
-        }
-
+    }
+    for x in media.clone() {
+        let atags = utils::RetagUtils { apath: x.clone() };
+        let alltags = atags.all_tags();
+        println!("alltags: {:?}", alltags);
     }
 
-    println!("Processed {} files", count);
+        // println!("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{}", count)
+
+
+    let duration = start.elapsed();
+    println!("Processed {} files in {} seconds", count, duration.as_secs());
 
 
     Ok(())
