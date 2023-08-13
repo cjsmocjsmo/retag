@@ -32,11 +32,11 @@ fn main() -> std::io::Result<()> {
             panic!("Tags don't match\nHalting program until tags are fixed")
         }
     }
-    for x in media.clone() {
-        let atags = utils::RetagUtils { apath: x.clone() };
-        let alltags = atags.all_tags();
-        println!("alltags: {:?}", alltags);
-    }
+    // for x in media.clone() {
+    //     let atags = utils::RetagUtils { apath: x.clone() };
+    //     let alltags = atags.all_tags();
+    //     println!("alltags: {:?}", alltags);
+    // }
 
         // println!("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n{}", count)
 
